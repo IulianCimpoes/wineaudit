@@ -20,7 +20,7 @@ class AuditEventServiceTest {
         JsonMapper mapper = JsonMapper.builder().findAndAddModules().build();
         Clock clock = Clock.fixed(Instant.parse("2026-02-12T10:00:00Z"), ZoneOffset.UTC);
 
-        AuditEventService service = new AuditEventService(repo, mapper, clock);
+        AuditEventService service = new AuditEventService(new AuditEventWriter(repo, mapper, clock));
 
         DomainEvent<String> event = new DomainEvent<>(
                 UUID.randomUUID(),
@@ -33,7 +33,7 @@ class AuditEventServiceTest {
 
         service.record("42", event);
 
-        verify(repo, times(1)).save(any(AuditEvent.class));
+        verify(repo, times(1)).saveAndFlush(any(AuditEvent.class));
     }
 
     @Test
@@ -42,7 +42,7 @@ class AuditEventServiceTest {
         JsonMapper mapper = JsonMapper.builder().findAndAddModules().build();
         Clock clock = Clock.systemUTC();
 
-        AuditEventService service = new AuditEventService(repo, mapper, clock);
+        AuditEventService service = new AuditEventService(new AuditEventWriter(repo, mapper, clock));
 
         DomainEvent<String> event = new DomainEvent<>(
                 UUID.randomUUID(),
