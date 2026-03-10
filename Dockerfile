@@ -4,14 +4,11 @@ WORKDIR /app
 
 # copy pom first to leverage docker cache
 COPY pom.xml .
-# if you use maven wrapper, copy it too (optional)
-COPY mvnw .
-COPY .mvn .mvn
 
 # download deps (cacheable layer)
 RUN mvn -q -DskipTests dependency:go-offline || true
 
-# now copy sources and build
+#copy sources and build
 COPY src ./src
 RUN mvn -DskipTests package
 
